@@ -29,21 +29,11 @@ function InitialDataTableWithServerSide(htmlTableName,postUrl,columsArray) {
         },
         searching: true,
         columns: columsArray,
-        //columns: [
-        //    { data: 'id', searchable: true },
-        //    { data: 'name', searchable: true },
-        //    { data: 'price', searchable: true },
-        //    { data: 'category', searchable: true }
-        //],
+       
         language: {
             url: '/lib/datatables-aspnetcore/turkish_config.json'
         }
     });
 }
-
-
-//$(document).ready(function () {
-//    var table =
-//});
 
 
