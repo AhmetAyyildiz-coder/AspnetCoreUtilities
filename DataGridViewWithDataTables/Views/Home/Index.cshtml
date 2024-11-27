@@ -1,0 +1,35 @@
+﻿
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+
+<table id="productsTable" class="display" style="width:100%">
+    <thead>
+        <tr>
+            <th>Product ID</th>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Category</th>
+        </tr>
+    </thead>
+</table>
+
+
+
+@section Scripts {
+    <script src="~/js/components/DataTablesv1.js"></script>
+<script>
+   $(document).ready(function () {
+            InitialDataTableWithServerSide("#productsTable", '/Home/GetProducts', [
+                { data: 'id', searchable: true },
+                { data: 'name', searchable: true },
+                { data: 'price', searchable: true },
+                { data: 'category', searchable: true }
+            ]);
+});
+</script>
+}
+
