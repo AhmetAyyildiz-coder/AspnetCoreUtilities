@@ -12,7 +12,6 @@
             <th>Product ID</th>
             <th>Name</th>
             <th>Price</th>
-            <th>Category</th>
         </tr>
     </thead>
 </table>
@@ -23,11 +22,10 @@
     <script src="~/js/components/DataTablesv1.js"></script>
 <script>
    $(document).ready(function () {
-            InitialDataTableWithServerSide("#productsTable", '/Home/GetProducts', [
+            InitialDataTableWithServerSideAndMultipleFilter("#productsTable", '/Home/GetProducts', [
                 { data: 'id', searchable: true },
                 { data: 'name', searchable: true },
-                { data: 'price', searchable: true },
-                { data: 'category', searchable: true }
+                { data: 'price', searchable: true }
             ]);
 });
 </script>

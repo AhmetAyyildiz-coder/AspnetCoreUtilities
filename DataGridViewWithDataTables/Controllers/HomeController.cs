@@ -1,4 +1,5 @@
 using BaseLibrary.Models.FrontEnd;
+using BaseMockDatabaseSqlLite.Data;
 using Bogus;
 using DataGridViewWithDataTables.Models;
 using DataTables.AspNet.Core;
@@ -18,22 +19,15 @@ namespace DataGridViewWithDataTables.Controllers
         private const string CACHE_KEY = "GridMockData";
         private const int CACHE_DURATION_MINUTES = 5;
 
-        private static List<Product> _mockProducts;
+        //protected readonly List<Product> _mockProducts;
+        private ApplicationDbContext _context;
 
 
-        public HomeController(ILogger<HomeController> logger, IMemoryCache cache)
+        public HomeController(ILogger<HomeController> logger, IMemoryCache cache, ApplicationDbContext context)
         {
             _logger = logger;
             _cache = cache;
-
-            var faker = new Faker<Product>()
-               .RuleFor(p => p.Id, f => f.IndexFaker + 1)
-               .RuleFor(p => p.Name, f => f.Commerce.ProductName())
-               .RuleFor(p => p.Category, f => f.Commerce.ProductMaterial())
-               .RuleFor(p => p.Price, f => decimal.Parse(f.Commerce.Price(10, 1000)))
-               .RuleFor(p => p.Description, f => f.Commerce.ProductDescription());
-
-            _mockProducts = faker.Generate(500);
+            _context = context;
         }
 
 
@@ -42,7 +36,7 @@ namespace DataGridViewWithDataTables.Controllers
         {
             try
             {
-                var query = _mockProducts.AsQueryable();
+                var query = _context.Products.AsQueryable();
 
                 // Global arama - case insensitive
                 if (!string.IsNullOrEmpty(request.SearchValue))
@@ -51,15 +45,13 @@ namespace DataGridViewWithDataTables.Controllers
                     query = query.Where(p =>
                         p.Id.ToString().Contains(searchValue) ||
                         p.Name.ToLower().Contains(searchValue) ||
-                        p.Price.ToString().Contains(searchValue) ||
-                        (p.Category != null && p.Category.ToLower().Contains(searchValue))
-                    );
+                        p.Price.ToString().Contains(searchValue) );
                 }
 
-                var totalRecords = _mockProducts.Count;
+                var totalRecords = _context.Products.Count();
                 var filteredCount = query.Count();
 
-                // Sýralama
+                // Sï¿½ralama
                 if (!string.IsNullOrEmpty(request.SortColumn))
                 {
                     var isAscending = request.SortDirection?.ToLower() == "asc";
@@ -68,7 +60,6 @@ namespace DataGridViewWithDataTables.Controllers
                         "id" => isAscending ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id),
                         "name" => isAscending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name),
                         "price" => isAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price),
-                        "category" => isAscending ? query.OrderBy(p => p.Category) : query.OrderByDescending(p => p.Category),
                         _ => query
                     };
                 }

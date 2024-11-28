@@ -1,19 +1,33 @@
+using BaseMockDatabaseSqlLite.Data;
+using BaseMockDatabaseSqlLite.SeedData;
+using DataTables.AspNet.AspNetCore;
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+       options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddMemoryCache(options =>
 {
-    // Cache boyutunu sýnýrla (opsiyonel)
+    // Cache boyutunu sÄ±nÄ±rla (opsiyonel)
     options.SizeLimit = 1024; //mb
 
-    // Cache dolu olduðunda en az kullanýlaný sil
+    // Cache dolu olduÄŸunda en az kullanÄ±lan sil
     options.CompactionPercentage = 0.25;
 });
 
+try
+{
+    SeedDataClass.SeedDatabaseAsync(builder.Services.BuildServiceProvider()).Wait();
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
 
 var app = builder.Build();
 
