@@ -23,6 +23,8 @@ namespace BaseLibrary.Models.FrontEnd
         public string Data { get; set; }
         public string SearchValue { get; set; }
         public bool Searchable { get; set; }
+        public bool IsMultipleSearch { get; set; }
+        public string[] SearchValues { get; set; }
     }
 }
 

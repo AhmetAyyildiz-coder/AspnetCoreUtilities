@@ -48,7 +48,10 @@ function InitialDataTableWithServerSideAndMultipleFilter(htmlTableName, postUrl,
         processing: true,
         serverSide: true,
         ordering: false, // Sıralamayı devre dışı bırakır
-
+        paging: false,          // Sayfalama kapatılır
+        scrollY: '300px',       // Dikey scroll eklenir (300px yüksekliğinde)
+        scrollX: true,          // Yatay scroll eklenir
+        scrollCollapse: true,   // Scroll alanı içeriğe göre daraltılabilir
         ajax: {
             url: postUrl,
             type: 'POST',
@@ -85,15 +88,23 @@ function InitialDataTableWithServerSideAndMultipleFilter(htmlTableName, postUrl,
                 var column = this;
                 // İlk sütun hariç diğer sütunlara filtre ekle
                 if (index !== 0) {
-                    var select = $('<select><option value=""></option></select>')
+                    var select = $('<select multiple="multiple" class="form-control select2"></select>')
                         .appendTo($(column.header()))
+                        .select2({
+                            placeholder: "Seçiniz",
+                            allowClear: true
+                        })
                         .on('change', function () {
-                            var val = $(this).val();
-                            column.search(val).draw(); // Sunucu tarafına gönder
+                            var values = $(this).val();
+                            var searchValue = values ? values.join('|') : '';
+                            column.search(searchValue, true, false).draw();
                         });
 
                     column.data().unique().sort().each(function (d) {
-                        select.append('<option value="' + d + '">' + d + '</option>');
+                        // Null veya boş değerleri atla
+                        if (d !== null && d !== '') {
+                            select.append('<option value="' + d + '">' + d + '</option>');
+                        }
                     });
                 }
             });

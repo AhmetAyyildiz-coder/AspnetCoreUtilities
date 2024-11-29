@@ -60,7 +60,11 @@ namespace DataGridViewWithDataTables.Controllers
                                 query = query.Where(p => p.Id.ToString().Contains(searchValue));
                                 break;
                             case "name":
-                                query = query.Where(p => p.Name.ToLower().Contains(searchValue));
+                                var splittedNames = searchValue.Split("|");
+                                query = query.Where(p =>
+                                    splittedNames.Any(name => p.Name.ToLower() == name.ToLower()
+                                    )
+                                );
                                 break;
                             case "price":
                                 query = query.Where(p => p.Price.ToString().Contains(searchValue));
@@ -72,24 +76,7 @@ namespace DataGridViewWithDataTables.Controllers
                 var totalRecords = _context.Products.Count();
                 var filteredCount = query.Count();
 
-                //// Sıralama
-                //if (!string.IsNullOrEmpty(request.SortColumn))
-                //{
-                //    var isAscending = request.SortDirection?.ToLower() == "asc";
-                //    switch (request.SortColumn.ToLower())
-                //    {
-                //        case "id":
-                //            query = isAscending ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id);
-                //            break;
-                //        case "name":
-                //            query = isAscending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name);
-                //            break;
-                //        case "price":
-                //            query = isAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
-                //            break;
-                //    }
-                //}
-
+               
                 // Sayfalama
                 var data = query.Skip(request.Start)
                                .Take(request.Length)

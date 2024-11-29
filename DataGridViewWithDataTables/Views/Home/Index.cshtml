@@ -20,7 +20,8 @@
     <script src="~/js/components/DataTablesv1.js"></script>
     <script>
         $(document).ready(function () {
-            InitialDataTableWithServerSideAndMultipleFilter("#productsTable", '/Home/GetProducts', [
+            InitialDataTableWithServerSideAndMultipleFilter("#productsTable"
+            , '/Home/GetProducts', [
                 { data: 'id', searchable: true },
                 { data: 'name', searchable: true },
                 { data: 'price', searchable: true }
