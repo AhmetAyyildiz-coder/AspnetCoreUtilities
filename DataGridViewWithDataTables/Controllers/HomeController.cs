@@ -38,31 +38,57 @@ namespace DataGridViewWithDataTables.Controllers
             {
                 var query = _context.Products.AsQueryable();
 
-                // Global arama - case insensitive
+                // Global arama
                 if (!string.IsNullOrEmpty(request.SearchValue))
                 {
                     var searchValue = request.SearchValue.ToLower();
                     query = query.Where(p =>
                         p.Id.ToString().Contains(searchValue) ||
                         p.Name.ToLower().Contains(searchValue) ||
-                        p.Price.ToString().Contains(searchValue) );
+                        p.Price.ToString().Contains(searchValue));
+                }
+
+                // Kolon bazlı filtreleme
+                if (request.Columns != null)
+                {
+                    foreach (var column in request.Columns.Where(c => !string.IsNullOrEmpty(c.SearchValue)))
+                    {
+                        var searchValue = column.SearchValue.ToLower();
+                        switch (column.Data.ToLower())
+                        {
+                            case "id":
+                                query = query.Where(p => p.Id.ToString().Contains(searchValue));
+                                break;
+                            case "name":
+                                query = query.Where(p => p.Name.ToLower().Contains(searchValue));
+                                break;
+                            case "price":
+                                query = query.Where(p => p.Price.ToString().Contains(searchValue));
+                                break;
+                        }
+                    }
                 }
 
                 var totalRecords = _context.Products.Count();
                 var filteredCount = query.Count();
 
-                // S�ralama
-                if (!string.IsNullOrEmpty(request.SortColumn))
-                {
-                    var isAscending = request.SortDirection?.ToLower() == "asc";
-                    query = request.SortColumn.ToLower() switch
-                    {
-                        "id" => isAscending ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id),
-                        "name" => isAscending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name),
-                        "price" => isAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price),
-                        _ => query
-                    };
-                }
+                //// Sıralama
+                //if (!string.IsNullOrEmpty(request.SortColumn))
+                //{
+                //    var isAscending = request.SortDirection?.ToLower() == "asc";
+                //    switch (request.SortColumn.ToLower())
+                //    {
+                //        case "id":
+                //            query = isAscending ? query.OrderBy(p => p.Id) : query.OrderByDescending(p => p.Id);
+                //            break;
+                //        case "name":
+                //            query = isAscending ? query.OrderBy(p => p.Name) : query.OrderByDescending(p => p.Name);
+                //            break;
+                //        case "price":
+                //            query = isAscending ? query.OrderBy(p => p.Price) : query.OrderByDescending(p => p.Price);
+                //            break;
+                //    }
+                //}
 
                 // Sayfalama
                 var data = query.Skip(request.Start)

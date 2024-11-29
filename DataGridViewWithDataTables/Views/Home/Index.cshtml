@@ -1,6 +1,4 @@
-﻿
-
-@{
+﻿@{
     ViewData["Title"] = "Home Page";
 }
 
@@ -20,8 +18,8 @@
 
 @section Scripts {
     <script src="~/js/components/DataTablesv1.js"></script>
-<script>
-   $(document).ready(function () {
+    <script>
+        $(document).ready(function () {
             InitialDataTableWithServerSideAndMultipleFilter("#productsTable", '/Home/GetProducts', [
                 { data: 'id', searchable: true },
                 { data: 'name', searchable: true },
